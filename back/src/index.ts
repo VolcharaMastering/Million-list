@@ -1,13 +1,8 @@
-import express from "express";
+import "dotenv/config";
+import { createApp } from "./app";
 
-const app = express();
+const app = createApp();
 const port = process.env.PORT ?? 3000;
-
-app.use(express.json());
-
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
 
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
