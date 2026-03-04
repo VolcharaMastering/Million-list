@@ -32,10 +32,13 @@ const setOrder = (orderedIds: number[]): void => {
   add(kept);
 };
 
+// Return of selected ids in user order as an array.
 const getIds = (): number[] => [...selectedIds];
 
+// Returns a Set containing the selected ids.
 const getSet = (): Set<number> => new Set(selectedSet);
 
+// Checks if a specific id is selected.
 const has = (id: number): boolean => selectedSet.has(id);
 
 export const selectionStore = {
