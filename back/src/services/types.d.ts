@@ -17,3 +17,8 @@ type ItemsPage = {
 };
 
 type Row = { id: bigint };
+
+type AddItemsResult = {
+  added: number[];
+  alreadyExists: number[];
+};
