@@ -1,0 +1,75 @@
+@use "../../styleMixins" as mx;
+
+.the-button {
+  @include mx.flex-row(mx.$spacingXs);
+  justify-content: center;
+  font-family: mx.$fontFamily;
+  font-size: mx.$fontSizeBase;
+  line-height: mx.$lineHeightBase;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: mx.$radiusSm;
+  cursor: pointer;
+  transition:
+    background-color mx.$transitionFast,
+    border-color mx.$transitionFast,
+    color mx.$transitionFast;
+  @include mx.focus-ring;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .the-button__icon {
+    flex-shrink: 0;
+    width: 1.125em;
+    height: 1.125em;
+  }
+
+  &.the-button--icon-only {
+    padding: mx.$spacingSm;
+    .the-button__icon {
+      width: 1.25em;
+      height: 1.25em;
+    }
+  }
+
+  &.the-button--small {
+    padding: mx.$spacingXs mx.$spacingSm;
+    font-size: 0.875rem;
+    &.the-button--icon-only {
+      padding: mx.$spacingXs;
+    }
+  }
+
+  &:not(.the-button--small):not(.the-button--icon-only) {
+    padding: mx.$spacingSm mx.$spacingMd;
+  }
+
+  &.the-button--primary {
+    background-color: mx.$colorPrimary;
+    color: mx.$colorBg;
+    &:hover:not(:disabled) {
+      background-color: mx.$colorPrimaryHover;
+    }
+  }
+
+  &.the-button--secondary {
+    background-color: mx.$colorBg;
+    color: mx.$colorText;
+    border-color: mx.$colorBorder;
+    &:hover:not(:disabled) {
+      border-color: mx.$colorBorderFocus;
+      color: mx.$colorPrimary;
+    }
+  }
+
+  &.the-button--danger {
+    background-color: mx.$colorDanger;
+    color: mx.$colorBg;
+    &:hover:not(:disabled) {
+      background-color: mx.$colorDangerHover;
+    }
+  }
+}

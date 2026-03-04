@@ -1,0 +1,28 @@
+@use "./styleMixins" as mx;
+
+.app {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.panel {
+  flex: 1;
+  min-width: 0;
+  @include mx.flex-col(mx.$spacingMd);
+  @include mx.card;
+  margin: mx.$spacingMd;
+  padding: mx.$spacingMd;
+}
+
+.panelTitle {
+  @include mx.text-title;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.panelContent {
+  flex: 1;
+  min-height: 0;
+  @include mx.scroll-area;
+}

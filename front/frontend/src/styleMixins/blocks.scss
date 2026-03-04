@@ -1,0 +1,70 @@
+@use "sass:color";
+@use "consts" as c;
+
+// Flex row, centered on cross axis.
+@mixin flex-row($gap: c.$spacingSm) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $gap;
+}
+
+// Flex column.
+@mixin flex-col($gap: c.$spacingSm) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+// Fill parent and scroll on overflow.
+@mixin scroll-area {
+  overflow: auto;
+  overflow-block: auto;
+  overflow-inline: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Visible focus ring for keyboard users (use on interactive elements).
+@mixin focus-ring {
+  outline: none;
+  &:focus-visible {
+    box-shadow: c.$focusRing;
+  }
+}
+
+// Card-style block with border and radius.
+@mixin card {
+  background: c.$colorBg;
+  border: 1px solid c.$colorBorder;
+  border-radius: c.$radiusMd;
+  box-shadow: c.$shadowSm;
+}
+
+// Simple input look (border, radius, padding).
+@mixin input-base {
+  font-family: c.$fontFamily;
+  font-size: c.$fontSizeBase;
+  line-height: c.$lineHeightBase;
+  color: c.$colorText;
+  background: c.$colorBg;
+  border: 1px solid c.$colorBorder;
+  border-radius: c.$radiusSm;
+  padding: c.$spacingXs c.$spacingSm;
+  transition:
+    border-color c.$transitionFast,
+    box-shadow c.$transitionFast;
+  @include focus-ring;
+  &::placeholder {
+    color: c.$colorTextMuted;
+  }
+  &:hover {
+    border-color: color.adjust(c.$colorBorder, $lightness: -8%);
+  }
+}
+
+// Responsive min-width media.
+@mixin from($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}

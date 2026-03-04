@@ -1,0 +1,43 @@
+// Design tokens. Use in mixins or via @use in components.
+
+$fontFamily: Arial, sans-serif;
+$fontSizeBase: 1rem;
+$lineHeightBase: 1.5;
+$lineHeightTight: 1.25;
+
+$spacingUnit: 0.5rem;
+$spacingXs: $spacingUnit;
+$spacingSm: $spacingUnit * 2;
+$spacingMd: $spacingUnit * 3;
+$spacingLg: $spacingUnit * 4;
+$spacingXl: $spacingUnit * 6;
+
+$radiusSm: 4px;
+$radiusMd: 8px;
+$radiusLg: 12px;
+
+$transitionFast: 0.15s ease;
+$transitionNormal: 0.2s ease;
+
+$colorText: #1a1a1a;
+$colorTextMuted: #666;
+$colorBg: #fff;
+$colorBgSubtle: #f5f5f5;
+$colorBorder: #ddd;
+$colorBorderFocus: #396bd7;
+$colorPrimary: #396bd7;
+$colorPrimaryHover: #2a5bc0;
+$colorDanger: #c53030;
+$colorDangerHover: #9b2c2c;
+
+$shadowSm: 0 1px 2px rgba(0, 0, 0, 0.06);
+$shadowMd:
+  0 4px 6px -1px rgba(0, 0, 0, 0.08),
+  0 2px 4px -2px rgba(0, 0, 0, 0.06);
+$focusRing:
+  0 0 0 2px $colorBg,
+  0 0 0 4px $colorBorderFocus;
+
+$breakpointSm: 640px;
+$breakpointMd: 768px;
+$breakpointLg: 1024px;

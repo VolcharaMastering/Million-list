@@ -1,0 +1,26 @@
+@use "../../styleMixins" as mx;
+
+.the-input {
+  @include mx.flex-col(mx.$spacingXs);
+  min-width: 0;
+}
+
+.the-input__label {
+  @include mx.text-caption;
+  font-weight: 500;
+  color: mx.$colorText;
+}
+
+.the-input__field {
+  @include mx.input-base;
+  width: 100%;
+}
+
+.the-input__error {
+  @include mx.text-caption;
+  color: mx.$colorDanger;
+}
+
+.the-input--error .the-input__field {
+  border-color: mx.$colorDanger;
+}

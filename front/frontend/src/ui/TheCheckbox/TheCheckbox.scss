@@ -1,0 +1,21 @@
+@use "../../styleMixins" as mx;
+
+.the-checkbox {
+  @include mx.flex-row(mx.$spacingSm);
+  align-items: center;
+  cursor: pointer;
+}
+
+.the-checkbox__input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: mx.$colorPrimary;
+  cursor: pointer;
+  @include mx.focus-ring;
+}
+
+.the-checkbox__label {
+  @include mx.text-body;
+  cursor: pointer;
+  user-select: none;
+}
