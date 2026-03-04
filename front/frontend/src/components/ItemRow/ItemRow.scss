@@ -1,0 +1,23 @@
+@use "../../styleMixins" as mx;
+
+.item-row {
+  @include mx.flex-row(mx.$spacingSm);
+  align-items: center;
+  padding: mx.$spacingXs mx.$spacingSm;
+  border-radius: mx.$radiusSm;
+  min-height: 2.25rem;
+
+  &:hover {
+    background-color: mx.$colorBgSubtle;
+  }
+}
+
+.item-row__id {
+  @include mx.text-body;
+  flex: 1;
+  min-width: 0;
+}
+
+.item-row__action {
+  flex-shrink: 0;
+}

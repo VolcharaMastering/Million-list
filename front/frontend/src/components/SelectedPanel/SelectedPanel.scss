@@ -1,0 +1,38 @@
+@use "../../styleMixins" as mx;
+
+.selected-panel__toolbar {
+  @include mx.flex-row(mx.$spacingSm);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.selected-panel__search {
+  flex: 1;
+  min-width: 8rem;
+}
+
+.selected-panel__grip {
+  display: inline-flex;
+  align-items: center;
+  cursor: grab;
+  color: mx.$colorTextMuted;
+  padding: mx.$spacingXs;
+  border-radius: mx.$radiusSm;
+  touch-action: none;
+  @include mx.focus-ring;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.selected-panel__row--dragging {
+  opacity: 0.5;
+}
+
+.selected-panel__loading,
+.selected-panel__empty {
+  @include mx.text-caption;
+  padding: mx.$spacingSm;
+  color: mx.$colorTextMuted;
+}

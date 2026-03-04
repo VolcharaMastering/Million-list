@@ -87,7 +87,8 @@ const addItems = async (ids: number[]): Promise<AddItemsResult> => {
   return { added: toInsert, alreadyExists };
 };
 
-// Returns one page of selected ids (right panel). Order = selection store order. Optional search by id substring.
+// Returns one page of selected ids (right panel) in user-defined in-memory order.
+// Filtering does not change stored order; it only affects the returned page.
 const getSelectedPage = ({
   limit,
   offset,

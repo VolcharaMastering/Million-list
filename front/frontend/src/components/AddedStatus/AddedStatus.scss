@@ -1,0 +1,39 @@
+@use "../../styleMixins" as mx;
+
+.added-status {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 1.75rem;
+  border-radius: mx.$radiusSm;
+  border: 1px solid mx.$colorBorder;
+  padding: 0 mx.$spacingSm;
+  display: flex;
+  align-items: center;
+}
+
+.added-status--success {
+  background: mx.$colorBg;
+  color: mx.$colorPrimary;
+}
+
+.added-status--error {
+  background: mx.$colorBg;
+  color: mx.$colorDanger;
+}
+
+.added-status__text {
+  white-space: nowrap;
+  display: inline-block;
+  animation: added-status-move 8s linear infinite;
+}
+
+@keyframes added-status-move {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+

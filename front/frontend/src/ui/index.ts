@@ -12,4 +12,6 @@ export {
   Search,
   ArrowRight,
   GripVertical,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";

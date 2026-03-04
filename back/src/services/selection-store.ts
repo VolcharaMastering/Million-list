@@ -26,10 +26,32 @@ const remove = (ids: number[]): void => {
 };
 
 const setOrder = (orderedIds: number[]): void => {
-  const kept = orderedIds.filter((id) => selectedSet.has(id));
+  const currentIds = [...selectedIds];
+  const currentSet = new Set(currentIds);
+
+  // Keep unique ids from incoming order that already exist in selection.
+  const seen = new Set<number>();
+  const nextOrdered: number[] = [];
+  for (const id of orderedIds) {
+    if (!currentSet.has(id) || seen.has(id)) continue;
+    nextOrdered.push(id);
+    seen.add(id);
+  }
+
+  // Keep not-sent ids in their previous order.
+  for (const id of currentIds) {
+    if (!seen.has(id)) {
+      nextOrdered.push(id);
+      seen.add(id);
+    }
+  }
+
   selectedIds.length = 0;
   selectedSet.clear();
-  add(kept);
+  for (const id of nextOrdered) {
+    selectedIds.push(id);
+    selectedSet.add(id);
+  }
 };
 
 // Return of selected ids in user order as an array.

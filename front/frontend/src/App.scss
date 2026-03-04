@@ -4,15 +4,18 @@
   display: flex;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .panel {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   @include mx.flex-col(mx.$spacingMd);
   @include mx.card;
   margin: mx.$spacingMd;
   padding: mx.$spacingMd;
+  overflow: hidden;
 }
 
 .panelTitle {
@@ -25,4 +28,5 @@
   flex: 1;
   min-height: 0;
   @include mx.scroll-area;
+  overflow: auto;
 }
