@@ -1,33 +1,38 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
+import { selectionStore } from "./selection-store";
 
-// Returns one page of items with total count. Supports search and sort.
+// Returns one page of items with total count. Supports search, sort, and excluding selected ids.
 const getItemsPage = async ({
   limit,
   offset,
   search,
   sort,
+  excludeIds,
 }: ListItemsInput): Promise<ItemsPage> => {
-  // Order direction for SQL (ASC or DESC).
   const order = sort === "desc" ? "DESC" : "ASC";
+  const excludeList =
+    excludeIds && excludeIds.size > 0 ? [...excludeIds].map((id) => BigInt(id)) : [];
 
   if (search !== undefined && search.trim() !== "") {
-    // Match id as text with LIKE pattern.
     const pattern = `%${search.trim()}%`;
+    const whereClause =
+      excludeList.length > 0
+        ? Prisma.sql`id::text LIKE ${pattern} AND id NOT IN (${Prisma.join(excludeList.map((id) => Prisma.sql`${id}`), ", ")})`
+        : Prisma.sql`id::text LIKE ${pattern}`;
     const [items, countResult] = await Promise.all([
       prisma.$queryRaw<Row[]>`
         SELECT id FROM items
-        WHERE id::text LIKE ${pattern}
+        WHERE ${whereClause}
         ORDER BY id ${Prisma.raw(order)}
         LIMIT ${limit}
         OFFSET ${offset}
       `,
       prisma.$queryRaw<[{ count: bigint }]>`
         SELECT COUNT(*)::bigint AS count FROM items
-        WHERE id::text LIKE ${pattern}
+        WHERE ${whereClause}
       `,
     ]);
-    // Convert bigint to number for JSON.
     const total = Number(countResult[0]?.count ?? 0);
     return {
       total,
@@ -37,14 +42,18 @@ const getItemsPage = async ({
     };
   }
 
-  // No search: load page and total count with Prisma.
+  const where =
+    excludeList.length > 0
+      ? { id: { notIn: excludeList } }
+      : undefined;
   const [items, total] = await Promise.all([
     prisma.item.findMany({
+      where,
       orderBy: { id: sort },
       take: limit,
       skip: offset,
     }),
-    prisma.item.count(),
+    prisma.item.count({ where }),
   ]);
 
   return {
@@ -78,7 +87,29 @@ const addItems = async (ids: number[]): Promise<AddItemsResult> => {
   return { added: toInsert, alreadyExists };
 };
 
+// Returns one page of selected ids (right panel). Order = selection store order. Optional search by id substring.
+const getSelectedPage = ({
+  limit,
+  offset,
+  search,
+}: ListSelectedInput): ItemsPage => {
+  let ids = selectionStore.getIds();
+  if (search !== undefined && search.trim() !== "") {
+    const term = search.trim();
+    ids = ids.filter((id) => String(id).includes(term));
+  }
+  const total = ids.length;
+  const pageIds = ids.slice(offset, offset + limit);
+  return {
+    total,
+    limit,
+    offset,
+    items: pageIds.map((id) => ({ id })),
+  };
+};
+
 export const itemsService = {
   getItemsPage,
   addItems,
+  getSelectedPage,
 };
