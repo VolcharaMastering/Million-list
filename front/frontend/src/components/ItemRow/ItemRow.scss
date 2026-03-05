@@ -12,6 +12,25 @@
   }
 }
 
+.item-row__selectable {
+  @include mx.flex-row(mx.$spacingSm);
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.item-row__checkbox-wrap {
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
 .item-row__id {
   @include mx.text-body;
   flex: 1;

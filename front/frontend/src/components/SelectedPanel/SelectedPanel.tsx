@@ -8,63 +8,11 @@ import {
   type DragEndEvent,
   closestCenter,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import {
-  TheButton,
-  TheInput,
-  Search,
-  GripVertical,
-  ArrowUp,
-  ArrowDown,
-} from "../../ui";
-import { ItemRow } from "../ItemRow/ItemRow";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useListStore } from "../../store/listStore";
-import type { Item } from "../../types/items";
-
-const SCROLL_THRESHOLD = 100;
-
-const SortableRow = ({ item }: { item: Item }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: String(item.id) });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  const dragHandle = (
-    <span
-      ref={setActivatorNodeRef}
-      className="selected-panel__grip"
-      {...attributes}
-      {...listeners}
-    >
-      <GripVertical size={18} aria-hidden />
-    </span>
-  );
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={isDragging ? "selected-panel__row--dragging" : ""}
-    >
-      <ItemRow item={item} dragHandle={dragHandle} />
-    </div>
-  );
-};
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import { PanelToolbar } from "../PanelToolbar/PanelToolbar";
+import { SortableRow } from "./SortableRow";
 
 export const SelectedPanel = () => {
   const {
@@ -96,47 +44,14 @@ export const SelectedPanel = () => {
     loadSelectedPage(false);
   }, [loadSelectedPage, selected.search]);
 
-  const handleScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (
-      !el ||
-      isSorting ||
-      selected.loading ||
-      selected.total === 0 ||
-      selected.items.length >= selected.total
-    )
-      return;
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    if (scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD) {
-      loadMore();
-    }
-  }, [isSorting, selected.loading, selected.items.length, selected.total, loadMore]);
-
-  // Load next page when list does not fill container yet.
-  useEffect(() => {
-    const frameId = requestAnimationFrame(() => {
-      const el = scrollRef.current;
-      if (
-        !el ||
-        isSorting ||
-        selected.loading ||
-        selected.total === 0 ||
-        selected.items.length >= selected.total
-      )
-        return;
-      const { scrollHeight, clientHeight } = el;
-      if (scrollHeight - clientHeight < SCROLL_THRESHOLD) {
-        loadMore();
-      }
-    });
-    return () => cancelAnimationFrame(frameId);
-  }, [
-    isSorting,
-    selected.loading,
-    selected.items.length,
-    selected.total,
+  const handleScroll = useInfiniteScroll({
+    scrollRef,
+    loading: selected.loading,
+    total: selected.total,
+    itemCount: selected.items.length,
     loadMore,
-  ]);
+    blockLoad: isSorting,
+  });
 
   const handleDragStart = () => {
     setIsSorting(true);
@@ -162,38 +77,15 @@ export const SelectedPanel = () => {
     <aside className="panel selected-panel" aria-label="Selected items">
       <h2 className="panelTitle">Selected</h2>
 
-      <div className="selected-panel__toolbar">
-        <TheInput
-          value={searchInput}
-          onChange={setSearchInput}
-          placeholder="Filter by ID"
-          numericOnly
-          className="selected-panel__search"
-        />
-        <TheButton
-          variant="secondary"
-          size="small"
-          icon={Search}
-          aria-label="Apply filter"
-          onClick={() => setSelectedSearch(searchInput)}
-        />
-        <TheButton
-          variant="secondary"
-          size="small"
-          icon={ArrowUp}
-          onClick={() => handleSortClick("asc")}
-        >
-          Sort Asc
-        </TheButton>
-        <TheButton
-          variant="secondary"
-          size="small"
-          icon={ArrowDown}
-          onClick={() => handleSortClick("desc")}
-        >
-          Sort Desc
-        </TheButton>
-      </div>
+      <PanelToolbar
+        toolbarClassName="selected-panel__toolbar"
+        searchClassName="selected-panel__search"
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        onApplySearch={() => setSelectedSearch(searchInput)}
+        onSortAsc={() => handleSortClick("asc")}
+        onSortDesc={() => handleSortClick("desc")}
+      />
 
       <DndContext
         sensors={sensors}

@@ -87,16 +87,6 @@ itemsRouter.post("/selected", async (req, res, next) => {
   }
 });
 
-itemsRouter.delete("/selected", async (req, res, next) => {
-  try {
-    const body = selectedIdsBodySchema.parse(req.body);
-    selectionStore.remove(body.ids);
-    res.status(200).json({ removed: body.ids });
-  } catch (err) {
-    next(err);
-  }
-});
-
 itemsRouter.patch("/selected", async (req, res, next) => {
   try {
     const body = reorderBodySchema.parse(req.body);

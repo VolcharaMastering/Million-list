@@ -22,15 +22,36 @@ export const ItemRow = ({
   action,
 }: ItemRowProps) => (
   <div className="item-row">
-    {onToggleCheck !== undefined && (
-      <TheCheckbox
-        checked={checked}
-        onChange={() => onToggleCheck(item.id)}
+    {onToggleCheck !== undefined ? (
+      <button
+        type="button"
+        className="item-row__selectable"
+        onClick={() => onToggleCheck(item.id)}
         aria-label={`Select item ${item.id}`}
-      />
+      >
+        <span className="item-row__checkbox-wrap">
+          <TheCheckbox
+            checked={checked}
+            onChange={() => {}}
+            aria-hidden
+          />
+        </span>
+        <span className="item-row__id">{item.id}</span>
+      </button>
+    ) : (
+      <>
+        {dragHandle}
+        <span className="item-row__id">{item.id}</span>
+      </>
     )}
-    {dragHandle}
-    <span className="item-row__id">{item.id}</span>
-    {action && <span className="item-row__action">{action}</span>}
+    {action != null && (
+      <span
+        className="item-row__action"
+        onClick={(e) => e.stopPropagation()}
+        role="presentation"
+      >
+        {action}
+      </span>
+    )}
   </div>
 );

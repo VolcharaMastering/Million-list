@@ -1,12 +1,15 @@
 import "./AvailablePanel.scss";
 import { useEffect, useRef, useCallback, useState } from "react";
-import { isAxiosError } from "axios";
-import { TheButton, TheInput, ArrowRight, Search, ArrowUp, ArrowDown } from "../../ui";
+import { TheButton, TheInput, ArrowRight } from "../../ui";
+import { PanelToolbar } from "../PanelToolbar/PanelToolbar";
 import { ItemRow } from "../ItemRow/ItemRow";
 import { AddedStatus } from "../AddedStatus/AddedStatus";
 import { useListStore } from "../../store/listStore";
-
-const SCROLL_THRESHOLD = 100;
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import {
+  formatAddNewError,
+  formatAddNewSuccess,
+} from "../../utils/formatAddNewStatus";
 
 export const AvailablePanel = () => {
   const {
@@ -35,44 +38,13 @@ export const AvailablePanel = () => {
     loadAvailablePage(false);
   }, [loadAvailablePage, available.search, available.sort]);
 
-  const handleScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (
-      !el ||
-      available.loading ||
-      available.total === 0 ||
-      available.items.length >= available.total
-    )
-      return;
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    if (scrollHeight - scrollTop - clientHeight < SCROLL_THRESHOLD) {
-      loadMore();
-    }
-  }, [available.loading, available.items.length, available.total, loadMore]);
-
-  // Load more when list does not fill the scroll area (no scrollbar yet).
-  useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      const el = scrollRef.current;
-      if (
-        !el ||
-        available.loading ||
-        available.total === 0 ||
-        available.items.length >= available.total
-      )
-        return;
-      const { scrollHeight, clientHeight } = el;
-      if (scrollHeight - clientHeight < SCROLL_THRESHOLD) {
-        loadMore();
-      }
-    });
-    return () => cancelAnimationFrame(id);
-  }, [
-    available.items.length,
-    available.total,
-    available.loading,
+  const handleScroll = useInfiniteScroll({
+    scrollRef,
+    loading: available.loading,
+    total: available.total,
+    itemCount: available.items.length,
     loadMore,
-  ]);
+  });
 
   const handleAddToSelected = () => {
     const ids = [...available.selectedIds];
@@ -84,47 +56,15 @@ export const AvailablePanel = () => {
     if (!raw) return;
     const id = Number(raw);
     if (!Number.isInteger(id) || id < 1) return;
+    setNewIdValue("");
     void (async () => {
       try {
         const result = await addNewItems([id]);
-        const addedIds = result.added.join(", ");
-        const alreadyExistsIds = (result.alreadyExists ?? []).join(", ");
-        const textParts = [`Successfully added: ${addedIds || "-"}`];
-        if ((result.alreadyExists ?? []).length > 0) {
-          textParts.push(`Already exists: ${alreadyExistsIds}`);
-        }
-        setAddedStatus({
-          text: textParts.join(". "),
-          tone: "success",
-        });
+        setAddedStatus(formatAddNewSuccess(result));
       } catch (error) {
-        const errorPayload = isAxiosError(error)
-          ? (error.response?.data as
-              | {
-                  message?: string;
-                  error?: {
-                    message?: string;
-                    alreadyExists?: number[];
-                  };
-                }
-              | undefined)
-          : undefined;
-        const responseMessage =
-          errorPayload?.error?.message ?? errorPayload?.message;
-        const alreadyExistsIds = (errorPayload?.error?.alreadyExists ?? []).join(
-          ", ",
-        );
-        const textParts = [responseMessage ?? "Error"];
-        if ((errorPayload?.error?.alreadyExists ?? []).length > 0) {
-          textParts.push(`Already exists: ${alreadyExistsIds}`);
-        }
-        setAddedStatus({
-          text: textParts.join(". "),
-          tone: "error",
-        });
+        setAddedStatus(formatAddNewError(error));
       }
     })();
-    setNewIdValue("");
   };
 
   useEffect(() => {
@@ -146,38 +86,15 @@ export const AvailablePanel = () => {
         )}
       </div>
 
-      <div className="available-panel__toolbar">
-        <TheInput
-          value={searchInput}
-          onChange={setSearchInput}
-          placeholder="Filter by ID"
-          numericOnly
-          className="available-panel__search"
-        />
-        <TheButton
-          variant="secondary"
-          size="small"
-          icon={Search}
-          aria-label="Apply filter"
-          onClick={() => setAvailableSearch(searchInput)}
-        />
-        <TheButton
-          variant="secondary"
-          size="small"
-          icon={ArrowUp}
-          onClick={() => setAvailableSort("asc")}
-        >
-          Sort Asc
-        </TheButton>
-        <TheButton
-          variant="secondary"
-          size="small"
-          icon={ArrowDown}
-          onClick={() => setAvailableSort("desc")}
-        >
-          Sort Desc
-        </TheButton>
-      </div>
+      <PanelToolbar
+        toolbarClassName="available-panel__toolbar"
+        searchClassName="available-panel__search"
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        onApplySearch={() => setAvailableSearch(searchInput)}
+        onSortAsc={() => setAvailableSort("asc")}
+        onSortDesc={() => setAvailableSort("desc")}
+      />
 
       <div className="available-panel__add-new">
         <TheInput

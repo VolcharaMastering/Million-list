@@ -15,16 +15,6 @@ const add = (ids: number[]): number[] => {
   return added;
 };
 
-const remove = (ids: number[]): void => {
-  const toRemove = new Set(ids);
-  for (let i = selectedIds.length - 1; i >= 0; i--) {
-    if (toRemove.has(selectedIds[i])) {
-      selectedSet.delete(selectedIds[i]);
-      selectedIds.splice(i, 1);
-    }
-  }
-};
-
 const setOrder = (orderedIds: number[]): void => {
   const currentIds = [...selectedIds];
   const currentSet = new Set(currentIds);
@@ -65,7 +55,6 @@ const has = (id: number): boolean => selectedSet.has(id);
 
 export const selectionStore = {
   add,
-  remove,
   setOrder,
   getIds,
   getSet,
